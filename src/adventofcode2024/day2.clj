@@ -9,16 +9,9 @@
             [8 6 4 4 1]
             [1 3 6 7 9]])
 
-(def input (u/get-lines "resources/day2/input"))
+(def input (u/parse-integer-lines (u/get-lines "resources/day2/input")))
 
-(let [parse-line (fn[line]
-                   (->> line
-                        (re-seq #"(\d+)\s*")
-                        (map last)
-                        (map Integer/parseInt)))
-
-      parse-input (fn[lines]
-                    (map parse-line lines))
+(let [
 
       safe-check (fn [pred
                       a b]
@@ -59,10 +52,7 @@
 
       safe [1 3 6 7 9]
 
-      part1 (count
-             (filter part1-check
-                     (parse-input input)
-                     ))
+      part1 (count (filter part1-check input))
       ]
 
   ;;  {:a1 (eval-with-prev > safe)
