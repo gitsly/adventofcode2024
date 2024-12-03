@@ -59,6 +59,10 @@
       safe [1 3 6 7 9]
 
       part1 (count (filter part1-check input))
+
+      permutate (fn [col] (cons col
+                                (for [i (range (count col))]
+                                  (vec (u/drop-nth i col)))))
       ]
 
   ;;  {:a1 (eval-with-prev > safe)
@@ -68,6 +72,7 @@
    :part2 (eval-with-prev-badlevels < sample)
    }
 
+  (permutate sample)
   )
 
 
