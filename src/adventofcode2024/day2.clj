@@ -19,9 +19,22 @@
                        (nil? b)
                        (pred a b)))
 
+      max-diff (fn [a b]
+                 (let [diff (abs
+                             (- a b))]
+                   (and
+                    (>= diff 1)
+                    (<= diff 3)))
+                 )
+
+      tostr {> ">"
+             < "<"
+             max-diff "D" } 
+
       eval-with-prev (fn [pred
                           col]
                        "applies pred over sequence passing previous element as first param early out whenenver evaluates to false"
+                       (println "\t" (get tostr pred) col)
                        (loop [prev nil
                               col col]
                          (let [item (first col)
@@ -33,13 +46,6 @@
                              (recur (first col) (rest col))))))
 
 
-      max-diff (fn [a b]
-                 (let [diff (abs
-                             (- a b))]
-                   (and
-                    (>= diff 1)
-                    (<= diff 3)))
-                 )
 
       part1-check (fn[report]
                     (and
@@ -52,7 +58,6 @@
 
       safe [1 3 6 7 9]
 
-      part1 (count (filter part1-check input))
 
       permutate (fn [col] (cons col
                                 (for [i (range (count col))]
@@ -60,21 +65,27 @@
 
       eval-with-possible-one-bad (fn [pred
                                       report]
+                                   (println (get tostr pred) report)
                                    (some true?
                                          (map #(eval-with-prev pred %) (permutate report))))
 
       part2-check (fn[report]
                     (and
                      (or
-                      (eval-with-possible-one-bad > report)
-                      (eval-with-possible-one-bad < report))
+                      (eval-with-possible-one-bad < report)
+                      (eval-with-possible-one-bad > report))
                      (eval-with-possible-one-bad max-diff report)))
 
-      part2 (count (filter part2-check input))
+      ;;part1 (count (filter part1-check input))
+      ;;part2 (count (filter part2-check input))
       ]
 
-  {:part1 part1
-   :part2 part2 } ;; 422 too high 
+  (part2-check sample)
+
+  ;;  (filter part2-check input)
+
+
+  (count (filter part2-check input))
   )
 
 
