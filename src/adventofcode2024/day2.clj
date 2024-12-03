@@ -19,19 +19,25 @@
                        (nil? b)
                        (pred a b)))
 
-      eval-with-prev (fn [pred
-                          col]
-                       "applies pred over sequence passing previous element as first param early out whenenver evaluates to false"
-                       (loop [prev nil
-                              col col]
-                         (let [item (first col)
-                               eval (safe-check pred prev item)] 
-                           ;;(println prev item eval)
-                           (if (or (not eval)
-                                   (empty? col))
-                             eval
-                             (recur (first col) (rest col))))))
 
+      eval-with-prev-badlevels (fn [pred
+                                    col]
+                                 "applies pred over sequence passing previous element as first param early out whenenver evaluates to false"
+                                 (loop [prev nil
+                                        col col
+                                        badlevels 0]
+                                   (let [item (first col)
+                                         eval (safe-check pred prev item)] 
+                                     (if (empty? col)
+                                       badlevels
+                                       (recur (first col) (rest col) (if eval
+                                                                       badlevels
+                                                                       (inc badlevels))
+                                              )))))
+
+      eval-with-prev (fn [pred col]
+                       (= 0
+                          (eval-with-prev-badlevels pred col )))
 
       max-diff (fn [a b]
                  (let [diff (abs
@@ -58,8 +64,9 @@
   ;;  {:a1 (eval-with-prev > safe)
   ;;   :a2 (eval-with-prev < safe)
   ;;   :max-diff (eval-with-prev max-diff safe) }
-
-  part1
+  {:part1 part1
+   :part2 (eval-with-prev-badlevels < sample)
+   }
 
   )
 
