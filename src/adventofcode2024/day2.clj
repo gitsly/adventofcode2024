@@ -33,7 +33,7 @@
                               col col]
                          (let [item (first col)
                                eval (safe-check pred prev item)] 
-                           (println prev item eval)
+                           ;;(println prev item eval)
                            (if (or (not eval)
                                    (empty? col))
                              eval
@@ -59,18 +59,17 @@
 
       safe [1 3 6 7 9]
 
+      part1 (count
+             (filter part1-check
+                     (parse-input input)
+                     ))
       ]
-
-  (filter part1-check
-          (parse-input input)
-          )
 
   ;;  {:a1 (eval-with-prev > safe)
   ;;   :a2 (eval-with-prev < safe)
   ;;   :max-diff (eval-with-prev max-diff safe) }
 
-
-
+  part1
 
   )
 
