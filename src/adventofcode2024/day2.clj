@@ -34,7 +34,7 @@
       eval-with-prev (fn [pred
                           col]
                        "applies pred over sequence passing previous element as first param early out whenenver evaluates to false"
-                       (println "\t" (get tostr pred) col)
+                       (print "\t" col)
                        (loop [prev nil
                               col col]
                          (let [item (first col)
@@ -42,7 +42,9 @@
                            ;;(println prev item eval)
                            (if (or (not eval)
                                    (empty? col))
-                             eval
+                             (do
+                               (println " -> " eval)
+                               eval)
                              (recur (first col) (rest col))))))
 
 
@@ -65,9 +67,11 @@
 
       eval-with-possible-one-bad (fn [pred
                                       report]
-                                   (println (get tostr pred) report)
-                                   (some true?
-                                         (map #(eval-with-prev pred %) (permutate report))))
+                                   (print (get tostr pred) report)
+                                   (let [res (some true?
+                                                   (map #(eval-with-prev pred %) (permutate report)))]
+                                     (println res)
+                                     res))
 
       part2-check (fn[report]
                     (and
@@ -84,8 +88,7 @@
 
   ;;  (filter part2-check input)
 
-
-  (count (filter part2-check input))
+  (count (filter part2-check input)) ; -> 442 (wrong)
   )
 
 
