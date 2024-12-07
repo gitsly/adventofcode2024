@@ -11,9 +11,7 @@
 
 (def input (u/parse-integer-lines (u/get-lines "resources/day2/input")))
 
-(let [
-
-      safe-check (fn [pred
+(let [safe-check (fn [pred
                       a b]
                    (or (nil? a)
                        (nil? b)
@@ -31,64 +29,37 @@
              < "<"
              max-diff "D" } 
 
-      eval-with-prev (fn [pred
-                          col]
-                       "applies pred over sequence passing previous element as first param early out whenenver evaluates to false"
-                       (print "\t" col)
-                       (loop [prev nil
-                              col col]
-                         (let [item (first col)
-                               eval (safe-check pred prev item)] 
-                           ;;(println prev item eval)
-                           (if (or (not eval)
-                                   (empty? col))
-                             (do
-                               (println " -> " eval)
-                               eval)
-                             (recur (first col) (rest col))))))
+      bad-level-count (fn [pred
+                           col]
+                        (loop [prev nil
+                               col col]
+                          (let [item (first col)
+                                eval (safe-check pred prev item)] 
+                            (if (or (not eval)
+                                    (empty? col))
+                              eval
+                              (recur (first col) (rest col))))))
 
 
+      permutate (fn [col] 
+                  (for [i (range (count col))]
+                    (vec (u/drop-nth i col))))
 
       part1-check (fn[report]
                     (and
                      (or
-                      (eval-with-prev > report)
-                      (eval-with-prev < report))
-                     (eval-with-prev max-diff report)))
+                      (bad-level-count > report)
+                      (bad-level-count < report))
+                     (bad-level-count max-diff report)))
 
-      sample  (nth input 0)
+      part2-check (fn [report]
+                    (or (part1-check report)
+                        (some true? (map part1-check  
+                                         (permutate report)))))
 
-      safe [1 3 6 7 9]
-
-
-      permutate (fn [col] (cons col
-                                (for [i (range (count col))]
-                                  (vec (u/drop-nth i col)))))
-
-      eval-with-possible-one-bad (fn [pred
-                                      report]
-                                   (print (get tostr pred) report)
-                                   (let [res (some true?
-                                                   (map #(eval-with-prev pred %) (permutate report)))]
-                                     (println res)
-                                     res))
-
-      part2-check (fn[report]
-                    (and
-                     (or
-                      (eval-with-possible-one-bad < report)
-                      (eval-with-possible-one-bad > report))
-                     (eval-with-possible-one-bad max-diff report)))
-
-      ;;part1 (count (filter part1-check input))
-      ;;part2 (count (filter part2-check input))
       ]
 
-  (part2-check sample)
-
-  ;;  (filter part2-check input)
-
-  (count (filter part2-check input)) ; -> 442 (wrong)
-  )
+  {:part1 (count (filter part1-check input))
+   :part2 (count (filter part2-check input))})
 
 
