@@ -13,7 +13,7 @@
        (map Integer/parseInt)))
 
 (defn parse-integer-lines [lines]
-  (map parse-line lines))
+  (map parse-integer-line lines))
 
 (defn find-first
   [f coll]
