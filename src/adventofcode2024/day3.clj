@@ -13,9 +13,18 @@
 
 (s/def ::do (s/and string? #(= "do()" %)))
 (s/def ::don't (s/and string? #(= "don't()" %)))
-(s/def ::mul (s/coll-of integer? :count 2))
+(s/def ::mul (s/cat
+              :factor1 integer?
+              :factor2 integer?))
 
-(s/valid? ::mul [2 2])
+
+(s/def ::test (s/cat :k1 string?
+                     :k2 string?) )
+
+(s/valid? ::test '("string" "string"))
+
+
+(s/explain ::mul ["t" 2])
 (s/valid? ::do "do()")
 (s/valid? ::don't "don't()")
 
