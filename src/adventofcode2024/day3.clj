@@ -11,35 +11,46 @@
 (def input (slurp "resources/day3/input")) ; Pt1 -> 184576302 
 (def input input-pt2) ; Pt1 -> 184576302 
 
-(s/def ::do (s/and string? #(= "do()" %)))
-(s/def ::don't (s/and string? #(= "don't()" %)))
-(s/def ::mul (s/cat
-              :factor1 integer?
-              :factor2 integer?))
 
+(let [keywords ["mul"
+                "do()"
+                "don't()"]
 
-(s/def ::test (s/cat :k1 string?
-                     :k2 string?) )
+      ops (re-seq #"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)" input) ;; sec of [a b c] will be produced
 
-(s/valid? ::test '("string" "string"))
+      mul-fn (fn[state op]
+               state) 
 
+      do-fn (fn[state op]
+              state) 
 
-(s/explain ::mul ["t" 2])
-(s/valid? ::do "do()")
-(s/valid? ::don't "don't()")
-
-(let [muls (re-seq #"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)" input) ;; sec of [a b c] will be produced
+      dont-fn (fn[state op]
+                state) 
 
       parse-mul (fn[mul] 
-                  (let [[_ & factors] mul] (map Integer/parseInt factors)))
+                  (let [[_ & factors] mul
+                        factors (map Integer/parseInt factors)]
+                    {:op mul-fn
+                     :name (str (first factors) "*" (second factors))
+                     :param factors}))
 
-      ;;      part1 (->> muls
-      ;;                 (map parse-mul)
-      ;;                 (map #(reduce * %))
-      ;;                 (reduce +))
+      parse-op (fn[input]
+                 (if (str/starts-with? (first input) "mul")
+                   (parse-mul input)
+                   (condp = (first input)
+                     "do()" {:op do-fn :name "do"}
+                     "don't()" {:op dont-fn :name "dont" })))
 
+      parsed-ops (map parse-op ops)
 
-
+      traverse (fn [state op]
+                 (let [start-state { :enabled true }
+                       op-fn (:op op)
+                       param (:param op)]
+                   (if (not (map? state))
+                     start-state
+                     (op-fn state param)))) 
       ]
-  muls
-  )
+
+  (println (map :name parsed-ops))
+  (reduce traverse parsed-ops))
