@@ -18,6 +18,9 @@
 
       ops (re-seq #"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)" input) ;; sec of [a b c] will be produced
 
+      start-state {:enabled true
+                   :op-count 0 }
+
       mul-fn (fn[state op]
                state) 
 
@@ -44,13 +47,21 @@
       parsed-ops (map parse-op ops)
 
       traverse (fn [state op]
-                 (let [start-state { :enabled true }
-                       op-fn (:op op)
-                       param (:param op)]
-                   (if (not (map? state))
-                     start-state
-                     (op-fn state param)))) 
+                 (let [op-fn (:op op)
+                       param (:param op)
+                       ]
+                   (print (:name op) "")
+                   (-> state
+                       (update-in [:op-count] inc)
+                       (op-fn param)))) 
       ]
 
-  (println (map :name parsed-ops))
-  (reduce traverse parsed-ops))
+  ;;  (println (map :name parsed-ops))
+
+  (loop [state start-state
+         ops parsed-ops]
+    (if (empty? ops)
+      state
+      (recur (traverse state (first ops))
+             (rest ops))))
+  )
