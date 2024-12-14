@@ -13,8 +13,39 @@
             "SMSMSASXSS"
             "SAXAMASAAA"
             "MAMMMXMMMM"
-            "MXMXAXMASX"])
+            "MXMXAXMASX"]) ; pt1 -> 18
 
-;; 161 (2*4 + 5*5 + 11*8 + 8*5).
-(def input (slurp "resources/day4/input")) ; Pt1 -> 184576302 ,  Pt2; -> 118173507
+
+(def input (slurp "resources/day4/input"))
+
+(let [word "XMAS"
+
+      find-word (fn [col word]
+                  (loop [col col
+                         curword word
+                         matches []]
+                    (if (empty? col)
+                      matches ; iteration complete
+                      (let [letter (first col)
+                            check  (= (first curword) letter)
+                            matches  (if check
+                                       (conj matches letter)
+                                       matches)
+                            curword (if check
+                                      (rest curword)
+                                      curword)
+                            ]
+
+                        (print letter)
+
+                        (recur
+                         (rest col)
+                         curword
+                         matches
+                         )))))
+      ]
+
+  ;; "MMMSXXMASM"
+  (find-word (first input) word)
+  )
 
