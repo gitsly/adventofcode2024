@@ -21,31 +21,35 @@
 (let [word "XMAS"
 
       find-word (fn [col word]
+                  "Returns sequences of found word"
                   (loop [col col
                          curword word
-                         matches []]
+                         matched-words []]
                     (if (empty? col)
-                      matches ; iteration complete
+                      matched-words; iteration complete
                       (let [letter (first col)
-                            check  (= (first curword) letter)
-                            matches  (if check
-                                       (conj matches letter)
-                                       matches)
-                            curword (if check
-                                      (rest curword)
-                                      curword)
-                            ]
-
-                        (print letter)
-
+                            letter-match (= (first curword) letter)
+                            complete-word (and (= (count curword) 1)
+                                               letter-match)]
+                        (println (apply str curword))
                         (recur
+                         ;; remaining of collection
                          (rest col)
-                         curword
-                         matches
+                         ;; Current remaining word to match
+                         (if (and letter-match
+                                  (not complete-word))
+                           (rest curword) word)
+                         ;; Matched words
+                         (if complete-word
+                           (conj matched-words word)
+                           matched-words)
+
                          )))))
       ]
 
   ;; "MMMSXXMASM"
-  (find-word (first input) word)
+  ;;"XMASAXMAS" 
+  (find-word "XMASXMASAXMASAAAXMASA" word)
   )
+
 
