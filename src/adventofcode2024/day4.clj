@@ -42,14 +42,20 @@
                          ;; Matched words
                          (if complete-word
                            (conj matched-words word)
-                           matched-words)
+                           matched-words))))))
 
-                         )))))
+      dirs [[ 1 0]
+            [-1 0]
+            [0 1]
+            [0 -1]
+            [1 1]
+            [-1 -1]]
+
       ]
 
   ;; "MMMSXXMASM"
   ;;"XMASAXMAS" 
-  (find-word "XMASXMASAXMASAAAXMASA" word)
+  (find-word "" word)
   )
 
 
