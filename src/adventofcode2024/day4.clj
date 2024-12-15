@@ -15,47 +15,65 @@
             "MAMMMXMMMM"
             "MXMXAXMASX"]) ; pt1 -> 18
 
-
-(def input (slurp "resources/day4/input"))
+(def input (u/get-lines "resources/day4/input"))
 
 (let [word "XMAS"
+
+      dirs [[ 1  0]
+            [-1  0]
+            [ 0  1]
+            [ 0 -1]
+            [ 1  1]
+            [-1 -1]]
 
       find-word (fn [col word]
                   "Returns sequences of found word"
                   (loop [col col
-                         curword word
+                         matched-letters []
                          matched-words []]
                     (if (empty? col)
                       matched-words; iteration complete
                       (let [letter (first col)
-                            letter-match (= (first curword) letter)
-                            complete-word (and (= (count curword) 1)
-                                               letter-match)]
-                        (println (apply str curword))
+                            nextmatch (first (drop (count matched-letters) word))
+
+                            restart (= letter (first word))
+
+                            letter-match (= nextmatch letter)
+                            ]
+
+                        (comment
+                          (println
+                           {:letter letter
+                            :nextmatch nextmatch
+                            :restart restart 
+                            :matched-letters matched-letters
+                            :letter-match letter-match }))
+
+                        (println (conj matched-letters letter))
+
                         (recur
                          ;; remaining of collection
                          (rest col)
-                         ;; Current remaining word to match
-                         (if (and letter-match
-                                  (not complete-word))
-                           (rest curword) word)
+                         ;; Matched letters
+                         (if  letter-match
+                           (conj matched-letters letter)
+                           (if restart
+                             [ letter]
+                             []))
                          ;; Matched words
-                         (if complete-word
+                         (if (= (conj matched-letters letter)
+                                (seq word))
                            (conj matched-words word)
-                           matched-words))))))
+                           matched-words)
 
-      dirs [[ 1 0]
-            [-1 0]
-            [0 1]
-            [0 -1]
-            [1 1]
-            [-1 -1]]
+                         )))))
+
 
       ]
-
   ;; "MMMSXXMASM"
   ;;"XMASAXMAS" 
-  (find-word "" word)
+  ;; "MMMSXXMASM"  
+  (find-word "XXMAS"  word)
   )
 
-
+(drop 3 [1 2 3 4 5])
