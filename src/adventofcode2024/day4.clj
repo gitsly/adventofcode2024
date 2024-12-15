@@ -70,10 +70,11 @@
 
 
       ]
-  ;; "MMMSXXMASM"
-  ;;"XMASAXMAS" 
-  ;; "MMMSXXMASM"  
-  (find-word "XXMAS"  word)
+  ;; (find-word  "MMMSXXMASM" word)
+  ;;  (find-word "XMASAXMAS" word)
+  ;;  (find-word "MMMSXXMASM" word)
+  ;;  (find-word "XXMAS"  word)
+
   )
 
 (drop 3 [1 2 3 4 5])
