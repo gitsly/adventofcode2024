@@ -69,25 +69,44 @@
                          )))))
 
 
-      get-letter (fn [input x y]
+      get-letter (fn [input xy]
                    "input is two dimensional array of letters, returns nil if outside bounds"
-                   (let [width (count (first input))
+                   (let [[x y] xy
+                         width (count (first input))
                          height (count input)]
-                     (if (and (> x 0) (< x width)
-                              (> y 0) (< y height))
+                     (if (and (>= x 0) (< x width)
+                              (>= y 0) (< y height))
                        (nth (nth input y) x))))
 
+      letter-seq (fn [input start dir]
+                   "returns a lazy sequence of letters from start in direction"
+                   (loop [p start
+                          letters []]
+                     (let [letter (get-letter input p)]
+                       (if (nil? letter)
+                         letters
+
+                         (recur
+                          ;; calculate next p 
+                          (let [[dx dy] dir
+                                [px py] p]
+                            [(+ px dx) (+ py dy)])
+                          ;; letters
+                          (conj letters letter)
+                          )))))
 
       ]
   ;; (find-word "MMMSXXMASM" word)
   ;; (find-word "XMASAXMAS" word)
   ;; (find-word "MMMSXXMASM" word)
   ;; (find-word "XXMAS"  word)
+  ;; (get-letter input [4 0])
+  [(letter-seq input [0 0] [1 0])
+   (letter-seq input [9 0] [-1 0])
 
-  (get-letter input 9 2)
+   (letter-seq input [0 9] [0 -1])
 
-  
+   ]
 
   )
 
-(drop 3 [1 2 3 4 5])
