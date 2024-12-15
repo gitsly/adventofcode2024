@@ -70,10 +70,12 @@
 
 
       get-letter (fn [input x y]
-                   "input is two dimensional array of letters"
+                   "input is two dimensional array of letters, returns nil if outside bounds"
                    (let [width (count (first input))
                          height (count input)]
-                     (nth (nth input y) x)))
+                     (if (and (> x 0) (< x width)
+                              (> y 0) (< y height))
+                       (nth (nth input y) x))))
 
 
       ]
@@ -82,7 +84,7 @@
   ;; (find-word "MMMSXXMASM" word)
   ;; (find-word "XXMAS"  word)
 
-  (get-letter input 4 2)
+  (get-letter input 9 2)
 
   
 
