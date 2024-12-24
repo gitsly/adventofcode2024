@@ -96,35 +96,23 @@
                           (conj letters letter)
                           )))))
 
+      cols (apply
+            concat
+            (let [size (count input)
+                  sizedec (dec size)]
+              [(for [y (range size)] (letter-seq input [0 y] [1 0])) ; -->
+               (for [x (range size)] (letter-seq input [x 0] [0 1])) ; V
+               (for [x (range size)] (letter-seq input [x 0] [1 1])) ; \ upper right
+               (for [y (range 1 size)] (letter-seq input [0 y] [1 1])) ; \ lower right
+               (for [y (range size)] (letter-seq input [0 y] [1 -1])) ; / upper 
+               (for [x (range 1 size)] (letter-seq input [x sizedec] [1 -1])) ; / lower
+               ]))
+
+      sample (take 2
+                   (map #(take 2 %) cols))
+
       ]
-  ;; (find-word "MMMSXXMASM" word)
-  ;; (find-word "XMASAXMAS" word)
-  ;; (find-word "MMMSXXMASM" word)
-  ;; (find-word "XXMAS"  word)
-  ;; (get-letter input [4 0])
-  (comment
-    [(letter-seq input [0 0] [1 0])
-     (letter-seq input [9 0] [-1 0])
-     (letter-seq input [0 9] [0 -1])
-     (letter-seq input [9 9] [-1 -1])])
 
-  (let [size (count input)
-        sizedec (dec size)]
-    [
-     ;;(for [y (range size)] (letter-seq input [0 y] [1 0])) ; -->
-     ;;(for [y (range size)] (letter-seq input [sizedec y] [-1 0])) ; <-- TODO: reverse above
-     ;;(for [x (range size)] (letter-seq input [x 0] [0 1])) ; V
-     ;;(for [x (range size)] (letter-seq input [x sizedec] [0 -1])) ; A
-
-     ;;(for [x (range size)] (letter-seq input [x 0] [1 1])) ; \ upper right
-     ;;(for [y (range 1 size)] (letter-seq input [0 y] [1 1])) ; \ lower right
-
-
-     ]
-
-    )
-  ;;  (for [x (range 10)]
-  ;;    (letter-seq input [x 0] [1 1]))
+  (count cols)
 
   )
-
