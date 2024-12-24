@@ -108,11 +108,13 @@
                (for [x (range 1 size)] (letter-seq input [x sizedec] [1 -1])) ; / lower
                ]))
 
-      sample (take 2
-                   (map #(take 2 %) cols))
+      cols (concat
+            cols 
+            (map reverse cols))
 
-      ]
+      ;; 2633
+      part1 (reduce + (map count
+                           (map #(find-word % word) 
+                                cols)))]
 
-  (count cols)
-
-  )
+  part1)
