@@ -96,15 +96,14 @@
 
       box (fn [input xy]
             (let [[x y] xy]
-              (for [y (range y (+ y 3))
-                    x (range x (+ x 3))]
-                (get-letter input [x y]  )
-                ))) 
-
+              (for [y (range y (+ y 3))]
+                (for [x (range x (+ x 3))]
+                  (get-letter input [x y]))))) 
       ]
 
-  (box input [0 0])
-  
+  (get-letter
+   (box input [0 0])
+   [1 1])
 
   )
 
