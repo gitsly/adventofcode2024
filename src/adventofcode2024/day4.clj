@@ -21,13 +21,6 @@
 
 (let [word "XMAS"
 
-      dirs [[ 1  0]
-            [-1  0]
-            [ 0  1]
-            [ 0 -1]
-            [ 1  1]
-            [-1 -1]]
-
       find-word (fn [col word]
                   "Returns sequences of found word"
                   (loop [col col
@@ -37,20 +30,8 @@
                       matched-words; iteration complete
                       (let [letter (first col)
                             nextmatch (first (drop (count matched-letters) word))
-
                             restart (= letter (first word))
-
-                            letter-match (= nextmatch letter)
-                            ]
-
-                        (comment
-                          (println
-                           {:letter letter
-                            :nextmatch nextmatch
-                            :restart restart 
-                            :matched-letters matched-letters
-                            :letter-match letter-match }))
-
+                            letter-match (= nextmatch letter)]
                         (recur
                          ;; remaining of collection
                          (rest col)
@@ -64,10 +45,7 @@
                          (if (= (conj matched-letters letter)
                                 (seq word))
                            (conj matched-words word)
-                           matched-words)
-
-                         )))))
-
+                           matched-words))))))
 
       get-letter (fn [input xy]
                    "input is two dimensional array of letters, returns nil if outside bounds"
@@ -93,8 +71,7 @@
                                 [px py] p]
                             [(+ px dx) (+ py dy)])
                           ;; letters
-                          (conj letters letter)
-                          )))))
+                          (conj letters letter))))))
 
       cols (apply
             concat
@@ -115,6 +92,30 @@
       ;; 2633
       part1 (reduce + (map count
                            (map #(find-word % word) 
-                                cols)))]
+                                cols)))
 
-  part1)
+      box (fn [input xy]
+            (let [[x y] xy]
+              (for [y (range y (+ y 3))
+                    x (range x (+ x 3))]
+                (get-letter input [x y]  )
+                ))) 
+
+      ]
+
+  (box input [0 0])
+  
+
+  )
+
+;; 10 x 10
+(def input ["MMMSXXMASM"
+            "MSAMXMSMSA"
+            "AMXSXMAAMM"
+            "MSAMASMSMX"
+            "XMASAMXAMM"
+            "XXAMMXXAMA"
+            "SMSMSASXSS"
+            "SAXAMASAAA"
+            "MAMMMXMMMM"
+            "MXMXAXMASX"]) ; pt1 -> 18
