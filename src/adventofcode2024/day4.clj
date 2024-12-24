@@ -73,7 +73,8 @@
                    "input is two dimensional array of letters, returns nil if outside bounds"
                    (let [[x y] xy
                          width (count (first input))
-                         height (count input)]
+                         height (count input)
+                         ]
                      (if (and (>= x 0) (< x width)
                               (>= y 0) (< y height))
                        (nth (nth input y) x))))
@@ -101,12 +102,29 @@
   ;; (find-word "MMMSXXMASM" word)
   ;; (find-word "XXMAS"  word)
   ;; (get-letter input [4 0])
-  [(letter-seq input [0 0] [1 0])
-   (letter-seq input [9 0] [-1 0])
+  (comment
+    [(letter-seq input [0 0] [1 0])
+     (letter-seq input [9 0] [-1 0])
+     (letter-seq input [0 9] [0 -1])
+     (letter-seq input [9 9] [-1 -1])])
 
-   (letter-seq input [0 9] [0 -1])
+  (let [size (count input)
+        sizedec (dec size)]
+    [
+     ;;(for [y (range size)] (letter-seq input [0 y] [1 0])) ; -->
+     ;;(for [y (range size)] (letter-seq input [sizedec y] [-1 0])) ; <-- TODO: reverse above
+     ;;(for [x (range size)] (letter-seq input [x 0] [0 1])) ; V
+     ;;(for [x (range size)] (letter-seq input [x sizedec] [0 -1])) ; A
 
-   ]
+     ;;(for [x (range size)] (letter-seq input [x 0] [1 1])) ; \ upper right
+     ;;(for [y (range 1 size)] (letter-seq input [0 y] [1 1])) ; \ lower right
+
+
+     ]
+
+    )
+  ;;  (for [x (range 10)]
+  ;;    (letter-seq input [x 0] [1 1]))
 
   )
 
