@@ -64,7 +64,6 @@
                      (let [letter (get-letter input p)]
                        (if (nil? letter)
                          letters
-
                          (recur
                           ;; calculate next p 
                           (let [[dx dy] dir
@@ -95,15 +94,30 @@
                                 cols)))
 
       box (fn [input xy]
+            "Get a 3x3 box from input as [[][][]]"
             (let [[x y] xy]
               (for [y (range y (+ y 3))]
                 (for [x (range x (+ x 3))]
                   (get-letter input [x y]))))) 
-      ]
 
-  (get-letter
-   (box input [0 0])
-   [1 1])
+
+      xmas (fn [box]
+             "Returns true if MAS can be found in a X config in the 3x3 box"
+             (let [a (letter-seq box [0 0] [1 1])
+                   b (letter-seq box [0 2] [1 -1])
+                   letter-seqs [a b (reverse a) (reverse b)]
+                   not-empty? (fn[col]
+                                (not (empty? col)))
+                   ]
+               (>= 
+                (count
+                 (filter not-empty?
+                         (map #(find-word % "MAS") letter-seqs)))
+                2)))
+      ]
+  
+  (xmas
+   (box input [1 0]))
 
   )
 
