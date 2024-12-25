@@ -114,12 +114,16 @@
                  (filter not-empty?
                          (map #(find-word % "MAS") letter-seqs)))
                 2)))
-      ]
-  
-  (xmas
-   (box input [1 0]))
 
-  )
+      side-col (range (count input))
+      part2  (count
+              (filter true? 
+                      (for [x side-col
+                            y side-col]
+                        (xmas
+                         (box input [x y])))))]
+  {:part1 part1
+   :part2 part2})
 
 ;; 10 x 10
 (def input ["MMMSXXMASM"
