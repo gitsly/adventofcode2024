@@ -42,10 +42,29 @@
                      rules]
                   (filter #(= item (first %)) rules))
 
-      sorter  (fn [a b]
-                ;; (> a b)
-                (println a b)
-                false)
+      ;; 75,47,61,53,29
+      sorter  (fn [x y]
+                "The notation X|Y means that if both page number X and
+                page number Y are to be produced as part of an update,
+                page number X must be printed at some point before page number Y" 
+                (let [rule [x y]
+                      check (u/in? 
+                             (get-rules x rules)
+                             rule)]
+                  ;;(println x y ":" (get-rules x rules) "->" check)
+                  (case check
+                    true true
+                    nil false))
+                )
+      ;; 47 75
+      ;; 75 47
+      ;; 61 47
+      ;; 47 61
+      ;; 53 61
+      ;; 61 53
+      ;; 29 53
+      ;; 53 29
+
 
       sort-upd  (fn [coll]
                   (sort sorter coll))
@@ -53,8 +72,33 @@
       correct-order? (fn [coll rules]
                        (= (sort-upd coll) coll))
 
-      ;;      part1 (reduce + (map middle (filter #(correct-order? % rules) upd)))
+      part1 (reduce + (map middle (filter #(correct-order? % rules) upd)))
       ]
-  (sort-upd sample) ;; [75 47 61 53 29]
 
+  ;;  (sort-upd [75,97,47,61,53])
+
+  part1
   )
+
+
+;; [75 47 61 53 29]
+;;------------------ (Sorted)
+;; 47 75 : ([47 53] [47 13] [47 61] [47 29])
+;; 75 47 : ([75 29] [75 53] [75 47] [75 61] [75 13])
+;; 61 47 : ([61 13] [61 53] [61 29])
+;; 47 61 : ([47 53] [47 13] [47 61] [47 29])
+;; 53 61 : ([53 29] [53 13])
+;; 61 53 : ([61 13] [61 53] [61 29])
+;; 29 53 : ([29 13])
+;; 53 29 : ([53 29] [53 13])
+
+;; [75,97,47,61,53] becomes 97,75,47,61,53
+;;------------------- (Invalid: 75 before 97 violates rule 97|75)
+;; 97 75 : ([97 13] [97 61] [97 47] [97 29] [97 53] [97 75])
+;; 75 97 : ([75 29] [75 53] [75 47] [75 61] [75 13])
+;; 47 97 : ([47 53] [47 13] [47 61] [47 29])
+;; 97 47 : ([97 13] [97 61] [97 47] [97 29] [97 53] [97 75])
+;; 61 47 : ([61 13] [61 53] [61 29])
+;; 47 61 : ([47 53] [47 13] [47 61] [47 29])
+;; 53 61 : ([53 29] [53 13])
+;; 61 53 : ([61 13] [61 53] [61 29])
