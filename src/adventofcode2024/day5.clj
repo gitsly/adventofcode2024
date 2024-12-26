@@ -4,7 +4,11 @@
             [adventofcode2024.utils :as u]
             [clojure.set :as set]))
 
-(let [lines (u/get-lines "resources/day5/sample")
+(let [input "resources/day5/input" ; pt1 = 4996
+      input "resources/day5/sample" ; pt1 = 143
+
+      lines (u/get-lines input)
+
       [rules upd] (let [coll lines
                         pred (fn [item] (not (empty? item)))]
                     [(take-while pred coll)
@@ -76,31 +80,30 @@
 
       tests-ok (= expected-results tests)
 
-
       correct-order? (fn [coll rules]
-                       (every?
-                        true?
-                        (loop [res []
-                               before []
-                               coll coll]
-                          (let [curr (first coll)
-                                after (rest coll)
-                                ]
-                            (println before curr after)
-                            (if (empty? coll)
-                              res
-                              (recur
-                               (conj res (and
-                                          (before-check before curr rules)
-                                          (after-check curr after rules)))
-                               (conj before curr)
-                               (rest coll)))))))
+                       (every? true?
+                               (loop [res []
+                                      before []
+                                      coll coll]
+                                 (let [curr (first coll)
+                                       after (rest coll)]
+                                   (if (empty? coll)
+                                     res
+                                     (recur
+                                      (conj res (and
+                                                 (before-check before curr rules)
+                                                 (after-check curr after rules)))
+                                      (conj before curr)
+                                      (rest coll)))))))
 
+      middle (fn [coll]
+               (get coll
+                    (int (/ (count coll) 2))))
 
-      ]
-
-  (map 
-   #(correct-order? % rules)
-   upd)
-
+      part1 (reduce + 
+                    (map middle 
+                         (filter 
+                          #(correct-order? % rules)
+                          upd)))]
+  part1
   )
