@@ -44,37 +44,38 @@
                      rules]
                   (filter #(= item (first %)) rules))
 
-      after-check (fn [curr after]
-                    (let [after-rules (get-rules curr rules)
-                          after-nums (set/difference 
-                                      (set after)
-                                      (set (map second after-rules)))]
-                      (empty? after-nums)
+      after-check (fn [curr coll rules]
+                    (let [rules (get-rules curr rules)
+                          numbers (map second rules)]
+                      (every? #(u/in? numbers %) coll)))
 
-                      ))
+      before-check (fn [coll curr rules]
+                     (let [rules (get-rules curr rules)
+                           numbers-not-to-be-found-in-before (map second rules)]
+                       (every? #(not (u/in? coll %)) numbers-not-to-be-found-in-before)))
 
+      expected-results [true true false false true]
 
-      before-check (fn [before curr]
-                     (let [before-rules (get-rules curr rules)
-                           numbers-not-to-be-found-in-before (map second before-rules)]
-                       (every? #(not (u/in? before %)) numbers-not-to-be-found-in-before)))
+      tests [;; 75 is correctly first because there are rules that put each other page after it: 75|47, 75|61, 75|53, and 75|29. 
+             (after-check 75 [47,61,53,29] rules) ;-> true
 
+             ;; 47 is correctly second because 75 must be before it (75|47) and
+             ;; every other page must be after it according to 47|61, 47|53, 47|29.
+             (after-check 47 [61,53,29] rules) ;-> true
+
+             ;; The fourth update, 75,97,47,61,53, is not in the correct order:
+             ;; it would print 75 before 97, which violates the rule 97|75
+             (after-check 75 [97,47,61,53] rules)  ; false
+
+             ;; The fifth update, 61,13,29, is also not in the correct order,
+             ;; since it breaks the rule 29|13
+             (before-check [61 13] 29 rules) ; false
+
+             (before-check [75 47,61,53] 29 rules) ;-> true
+             ]
+
+      tests-ok (= expected-results tests)
       ]
 
-  ;; 75 is correctly first because there are rules that put each other page after it: 75|47, 75|61, 75|53, and 75|29. 
-  (after-check 75 [47,61,53,29]) ;-> true
-
-  ;; 47 is correctly second because 75 must be before it (75|47) and
-  ;; every other page must be after it according to 47|61, 47|53, 47|29.
-  (after-check 47 [61,53,29])
-
-  ;; The fourth update, 75,97,47,61,53, is not in the correct order:
-  ;; it would print 75 before 97, which violates the rule 97|75
-  (after-check 75 [97,47,61,53])
-
-  ;; The fifth update, 61,13,29, is also not in the correct order,
-  ;; since it breaks the rule 29|13
-  (before-check [61 13] 29)
-
-  (before-check [75 47,61,53] 29) ;-> true
+  tests-ok
   )
