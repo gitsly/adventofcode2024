@@ -40,36 +40,31 @@
 
       sample (first upd)
 
-      get-after-rules (fn [item
-                           rules]
-                        (filter #(= item (first %)) rules))
+      get-rules (fn [item
+                     rules]
+                  (filter #(= item (first %)) rules))
 
-      into-hash-map     (fn [rules]
-                          (map #(hash-map
-                                 (first %) (second %)) rules))
-      into-hash-map-rev (fn [rules]
-                          (map #(hash-map
-                                 (second %) (first %)) rules))
+      after-check (fn [curr after]
+                    (let [after-rules (get-rules curr rules)
 
+                          after-nums (set/difference 
+                                      (set after)
+                                      (set (map second after-rules)))]
+                      (empty? after-nums)))
       ]
+
+  ;; 75 is correctly first because there are rules that put each other page after it: 75|47, 75|61, 75|53, and 75|29. 
+  (after-check 75 [47,61,53,29]) ;-> true
+
+  ;; 47 is correctly second because 75 must be before it (75|47) and
+  ;; every other page must be after it according to 47|61, 47|53, 47|29.
+  (after-check 47 [61,53,29])
+
+  ;; The fourth update, 75,97,47,61,53, is not in the correct order:
+  ;; it would print 75 before 97, which violates the rule 97|75
+  (after-check 75 [97,47,61,53])
 
   ;; note: potential tree structure since multiple
   ;; keys are identical (before) 
 
-  ;; 75 is correctly first because there are rules that put each other page after it: 75|47, 75|61, 75|53, and 75|29. 
-  (let [curr 75
-        before []
-        after [47,61,53,29]
-
-        after-rules (get-after-rules curr rules)
-
-        after-nums (set/intersection 
-                    (set after)
-                    (set (map second after-rules)))
-
-        after-check (every? #(< % curr) after-nums)
-        ]
-
-    after-check
-
-    ))
+  )
