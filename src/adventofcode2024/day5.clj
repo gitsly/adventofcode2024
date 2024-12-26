@@ -77,21 +77,30 @@
       tests-ok (= expected-results tests)
 
 
-      traverse (fn [coll]
-                 (loop [before []
-                        coll coll]
-                   (let [curr (first coll)
-                         after (rest coll)]
-                     (println before curr after)
-                     (if (empty? coll)
-                       nil
-                       (recur
-                        (conj before curr)
-                        (rest coll))))))
+      correct-order? (fn [coll rules]
+                       (every?
+                        true?
+                        (loop [res []
+                               before []
+                               coll coll]
+                          (let [curr (first coll)
+                                after (rest coll)
+                                ]
+                            (println before curr after)
+                            (if (empty? coll)
+                              res
+                              (recur
+                               (conj res (and
+                                          (before-check before curr rules)
+                                          (after-check curr after rules)))
+                               (conj before curr)
+                               (rest coll)))))))
 
 
       ]
 
-  (traverse [1 2 3 4])
+  (map 
+   #(correct-order? % rules)
+   upd)
 
   )
