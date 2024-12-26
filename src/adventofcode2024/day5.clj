@@ -7,6 +7,11 @@
 (let [input "resources/day5/input" ; pt1 = 4996
       input "resources/day5/sample" ; pt1 = 143
 
+      ;; PART 2 (sort the incorrect ones)
+      ;; 75,97,47,61,53 becomes 97,75,47,61,53.
+      ;; 61,13,29 becomes 61,29,13.
+      ;; 97,13,75,29,47 becomes 97,75,47,29,13.
+
       lines (u/get-lines input)
 
       [rules upd] (let [coll lines
@@ -22,8 +27,7 @@
 
       parse-update (fn [line]
                      (vec (map Integer/parseInt
-                               (str/split
-                                line #","))))
+                               (str/split line #","))))
 
       rules (map parse-page-order rules)
       upd (map parse-update upd)
@@ -38,43 +42,19 @@
                      rules]
                   (filter #(= item (first %)) rules))
 
-      after-check (fn [curr coll rules]
-                    (let [rules (get-rules curr rules)
-                          numbers (map second rules)]
-                      (every? #(u/in? numbers %) coll)))
+      sorter  (fn [a b]
+                ;; (> a b)
+                (println a b)
+                false)
 
-      before-check (fn [coll curr rules]
-                     (let [rules (get-rules curr rules)
-                           numbers-not-to-be-found-in-before (map second rules)]
-                       (every? #(not (u/in? coll %)) numbers-not-to-be-found-in-before)))
+      sort-upd  (fn [coll]
+                  (sort sorter coll))
 
       correct-order? (fn [coll rules]
-                       (every? true?
-                               (loop [res []
-                                      before []
-                                      coll coll]
-                                 (let [curr (first coll)
-                                       after (rest coll)]
-                                   (if (empty? coll)
-                                     res
-                                     (recur
-                                      (conj res (and
-                                                 (before-check before curr rules)
-                                                 (after-check curr after rules)))
-                                      (conj before curr)
-                                      (rest coll)))))))
+                       (= (sort-upd coll) coll))
 
-      part1 (reduce + 
-                    (map middle 
-                         (filter 
-                          #(correct-order? % rules)
-                          upd)))
-
-      ;; PART 2 (sort the incorrect ones)
-      ;; 75,97,47,61,53 becomes 97,75,47,61,53.
-      ;; 61,13,29 becomes 61,29,13.
-      ;; 97,13,75,29,47 becomes 97,75,47,29,13.
-
+      ;;      part1 (reduce + (map middle (filter #(correct-order? % rules) upd)))
       ]
-  part1
+  (sort-upd sample) ;; [75 47 61 53 29]
+
   )
