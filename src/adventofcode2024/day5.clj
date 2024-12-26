@@ -75,7 +75,23 @@
              ]
 
       tests-ok (= expected-results tests)
+
+
+      traverse (fn [coll]
+                 (loop [before []
+                        coll coll]
+                   (let [curr (first coll)
+                         after (rest coll)]
+                     (println before curr after)
+                     (if (empty? coll)
+                       nil
+                       (recur
+                        (conj before curr)
+                        (rest coll))))))
+
+
       ]
 
-  tests-ok
+  (traverse [1 2 3 4])
+
   )
