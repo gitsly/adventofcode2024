@@ -31,25 +31,18 @@
                (filter #(not (nil? %)) 
                        (map 
                         #(get % curr) rules)))
-
-      heppas (fn [col  ; previously checked
-                  rules]
-               (let [curr (last col) ; current value to check
-                     check (fn[i col]
-                             (println col ":" i)
-                             (every? #(> % i) col))
-                     before (before curr rules)]
-
-                 (every? #(check % (drop-last col)) before)
-
-                 ))
+      
+      check (fn [curr
+                 rules]
+              "Returns true if all rules for 'curr' is met"
+              (let [before (before curr rules)]
+                (every? #(< % curr) before)))
 
       ]
 
   ;; note: potential tree structure since multiple
   ;; keys are identical (before) 
 
-  (heppas [74 47] rules) ; true
-  (heppas [74 47 61] rules) ; true
+  (check 75 rules) ; true
 
   )
