@@ -46,11 +46,19 @@
 
       after-check (fn [curr after]
                     (let [after-rules (get-rules curr rules)
-
                           after-nums (set/difference 
                                       (set after)
                                       (set (map second after-rules)))]
-                      (empty? after-nums)))
+                      (empty? after-nums)
+
+                      ))
+
+
+      before-check (fn [before curr]
+                     (let [before-rules (get-rules curr rules)
+                           numbers-not-to-be-found-in-before (map second before-rules)]
+                       (every? #(not (u/in? before %)) numbers-not-to-be-found-in-before)))
+
       ]
 
   ;; 75 is correctly first because there are rules that put each other page after it: 75|47, 75|61, 75|53, and 75|29. 
@@ -64,7 +72,9 @@
   ;; it would print 75 before 97, which violates the rule 97|75
   (after-check 75 [97,47,61,53])
 
-  ;; note: potential tree structure since multiple
-  ;; keys are identical (before) 
+  ;; The fifth update, 61,13,29, is also not in the correct order,
+  ;; since it breaks the rule 29|13
+  (before-check [61 13] 29)
 
+  (before-check [75 47,61,53] 29) ;-> true
   )
