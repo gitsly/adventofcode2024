@@ -26,21 +26,11 @@
                                 line #","))))
 
       rules (map parse-page-order rules)
-
       upd (map parse-update upd)
 
-
-      before (fn [curr
-                  rules]
-               "Get sequence of pages that must be printed before 'curr'"
-               (filter #(not (nil? %)) 
-                       (map 
-                        #(get % curr) rules)))
-      
-      check-after (fn [curr
-                       rules]
-                    (let [before (before curr rules)]
-                      (every? #(< % curr) before)))
+      middle (fn [coll]
+               (get coll
+                    (int (/ (count coll) 2))))
 
       sample (first upd)
 
@@ -58,28 +48,6 @@
                            numbers-not-to-be-found-in-before (map second rules)]
                        (every? #(not (u/in? coll %)) numbers-not-to-be-found-in-before)))
 
-      expected-results [true true false false true]
-
-      tests [;; 75 is correctly first because there are rules that put each other page after it: 75|47, 75|61, 75|53, and 75|29. 
-             (after-check 75 [47,61,53,29] rules) ;-> true
-
-             ;; 47 is correctly second because 75 must be before it (75|47) and
-             ;; every other page must be after it according to 47|61, 47|53, 47|29.
-             (after-check 47 [61,53,29] rules) ;-> true
-
-             ;; The fourth update, 75,97,47,61,53, is not in the correct order:
-             ;; it would print 75 before 97, which violates the rule 97|75
-             (after-check 75 [97,47,61,53] rules)  ; false
-
-             ;; The fifth update, 61,13,29, is also not in the correct order,
-             ;; since it breaks the rule 29|13
-             (before-check [61 13] 29 rules) ; false
-
-             (before-check [75 47,61,53] 29 rules) ;-> true
-             ]
-
-      tests-ok (= expected-results tests)
-
       correct-order? (fn [coll rules]
                        (every? true?
                                (loop [res []
@@ -96,14 +64,17 @@
                                       (conj before curr)
                                       (rest coll)))))))
 
-      middle (fn [coll]
-               (get coll
-                    (int (/ (count coll) 2))))
-
       part1 (reduce + 
                     (map middle 
                          (filter 
                           #(correct-order? % rules)
-                          upd)))]
+                          upd)))
+
+      ;; PART 2 (sort the incorrect ones)
+      ;; 75,97,47,61,53 becomes 97,75,47,61,53.
+      ;; 61,13,29 becomes 61,29,13.
+      ;; 97,13,75,29,47 becomes 97,75,47,29,13.
+
+      ]
   part1
   )
