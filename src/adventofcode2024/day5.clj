@@ -5,12 +5,7 @@
             [clojure.set :as set]))
 
 (let [input "resources/day5/input" ; pt1 = 4996
-      input "resources/day5/sample" ; pt1 = 143
-
-      ;; PART 2 (sort the incorrect ones)
-      ;; 75,97,47,61,53 becomes 97,75,47,61,53.
-      ;; 61,13,29 becomes 61,29,13.
-      ;; 97,13,75,29,47 becomes 97,75,47,29,13.
+      ;;     input "resources/day5/sample" ; pt1 = 143
 
       lines (u/get-lines input)
 
@@ -33,16 +28,13 @@
       upd (map parse-update upd)
 
       middle (fn [coll]
-               (get coll
+               (get (vec coll)
                     (int (/ (count coll) 2))))
-
-      sample (first upd)
 
       get-rules (fn [item
                      rules]
                   (filter #(= item (first %)) rules))
 
-      ;; 75,47,61,53,29
       sorter  (fn [x y]
                 "The notation X|Y means that if both page number X and
                 page number Y are to be produced as part of an update,
@@ -54,17 +46,7 @@
                   ;;(println x y ":" (get-rules x rules) "->" check)
                   (case check
                     true true
-                    nil false))
-                )
-      ;; 47 75
-      ;; 75 47
-      ;; 61 47
-      ;; 47 61
-      ;; 53 61
-      ;; 61 53
-      ;; 29 53
-      ;; 53 29
-
+                    nil false)))
 
       sort-upd  (fn [coll]
                   (sort sorter coll))
@@ -73,32 +55,12 @@
                        (= (sort-upd coll) coll))
 
       part1 (reduce + (map middle (filter #(correct-order? % rules) upd)))
-      ]
 
-  ;;  (sort-upd [75,97,47,61,53])
+      part2 (->> upd
+                 (filter #(not (correct-order? % rules)))
+                 (map sort-upd)
+                 (map middle)
+                 (reduce +))]
 
-  part1
-  )
-
-
-;; [75 47 61 53 29]
-;;------------------ (Sorted)
-;; 47 75 : ([47 53] [47 13] [47 61] [47 29])
-;; 75 47 : ([75 29] [75 53] [75 47] [75 61] [75 13])
-;; 61 47 : ([61 13] [61 53] [61 29])
-;; 47 61 : ([47 53] [47 13] [47 61] [47 29])
-;; 53 61 : ([53 29] [53 13])
-;; 61 53 : ([61 13] [61 53] [61 29])
-;; 29 53 : ([29 13])
-;; 53 29 : ([53 29] [53 13])
-
-;; [75,97,47,61,53] becomes 97,75,47,61,53
-;;------------------- (Invalid: 75 before 97 violates rule 97|75)
-;; 97 75 : ([97 13] [97 61] [97 47] [97 29] [97 53] [97 75])
-;; 75 97 : ([75 29] [75 53] [75 47] [75 61] [75 13])
-;; 47 97 : ([47 53] [47 13] [47 61] [47 29])
-;; 97 47 : ([97 13] [97 61] [97 47] [97 29] [97 53] [97 75])
-;; 61 47 : ([61 13] [61 53] [61 29])
-;; 47 61 : ([47 53] [47 13] [47 61] [47 29])
-;; 53 61 : ([53 29] [53 13])
-;; 61 53 : ([61 13] [61 53] [61 29])
+  {:part1 part1 
+   :part2 part2})
