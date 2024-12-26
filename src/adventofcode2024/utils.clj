@@ -19,6 +19,11 @@
   [f coll]
   (first (filter f coll)))
 
+(defn in? 
+  "true if coll contains elm"
+  [coll element]  
+  (some #(= element %) coll))
+
 (defn drop-nth [n coll]
   (concat 
    (take n coll)
