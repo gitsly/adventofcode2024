@@ -158,12 +158,19 @@
                           (take-while is-not-done
                                       (iterate update-state state))))))
 
+      all-permutations (for [x (range (count grid))]
+                         (update state :grid #(add-obstacle % [x 6])))
       ]
   
   (doall (print-state
           (update sample-state :grid #(add-obstacle % [4 6]))))
 
-  (check-infinite sample-state)
+  ;;  (check-infinite
+  ;;   (update state :grid #(add-obstacle % [3 6])))
+
+  (map #(nth % 6)
+       (map :grid
+            all-permutations))
 
   )
 
