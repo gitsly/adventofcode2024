@@ -17,16 +17,19 @@
                   [-1 0] \< })
 
 (let [input "resources/day6/sample" ; pt1: 5409
-      input "resources/day6/printingpress"
+      ;;input "resources/day6/printingpress" ; 18 unique steps
       ;;     input "resources/day6/hasobstacle"
 
       grid (u/get-lines input)
 
       in-grid (fn [grid
                    xy]
+                "Gets the character from grid at position xy"
                 (let [[x y] xy]
                   (get
                    (get grid y) x)))
+
+      
 
       find-start (fn [grid]
                    "Returns [x,y] vector where ^ is located"
@@ -84,6 +87,7 @@
       has-obstacle (fn [grid dir pos]
                      (let [check-pos (in-grid grid (vector-add pos dir))]
                        (= check-pos obstacle-char)))
+
       move (fn [state]
              (let [{dir :dir
                     grid :grid
@@ -134,11 +138,25 @@
                                            (iterate update-state state)))))))
 
       sample-state (last (take 14 (iterate update-state state)))
+
+      add-obstacle (fn [grid
+                        xy]
+                     "Adds an obstacle at position (x, y) to the grid"
+                     (vec (let [[x y] xy
+                                replace-at (fn [s idx replacement]
+                                             (str (subs s 0 idx) replacement (subs s (inc idx))))
+                                row (nth grid y)]
+                            (concat 
+                             (conj (vec (take y grid))
+                                   (replace-at row x obstacle-char))
+                             (drop (inc y) grid)))))
+
       ]
   
   (doall (print-state
-          sample-state))
-  (:infinite sample-state)
+          (update sample-state :grid #(add-obstacle % [2 6]))))
 
-  part1
+  (take-while is-not-done
+              (iterate update-state state))
   )
+
