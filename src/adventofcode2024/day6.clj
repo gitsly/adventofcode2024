@@ -48,10 +48,11 @@
 
       state {:pos (find-start grid)
              :grid grid
-             :dir (first dirs) }
+             :dir (first dirs)
+             :visited []}
 
       print-state (fn [state]
-                    "Visualize grid in ascii art"
+                    "Visualize grid in ASCII art"
                     (let [{dir :dir
                            grid :grid
                            pos :pos} state
@@ -85,6 +86,10 @@
       has-obstacle (fn [grid dir pos]
                      (let [check-pos (in-grid grid (vector-add pos dir))]
                        (= check-pos obstacle-char)))
+      move (fn [state]
+             (-> state
+                 (update :visited #(conj % (:pos state)))
+                 (update :pos #(vector-add % (:dir state)))))
 
       pos-and-dir (fn [state]
                     (let [{dir :dir
@@ -92,7 +97,7 @@
                            pos :pos} state]
                       (if (has-obstacle grid dir pos)
                         (-> state (update :dir turn))
-                        (-> state (update :pos #(vector-add % dir))))))
+                        (-> state move))))
 
       inside (fn [state]
                (assoc state :inside
@@ -109,10 +114,13 @@
       ;;      part1 (count (set (map :pos
       ;;                             (take-while #(inside-grid (:pos %) (count grid))
       ;;                                         (iterate update-state state))))) ;; [4 5]
-      updated-state (update-state state)
+      sample-state (last (take 14 (iterate update-state state)))
       ]
   
   (doall (print-state
-          updated-state))
+          sample-state))
+
+  (:visited sample-state)
   ;; part1
   )
+
