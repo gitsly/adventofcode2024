@@ -151,12 +151,19 @@
                                    (replace-at row x obstacle-char))
                              (drop (inc y) grid)))))
 
+      check-infinite (fn [state]
+                       (:infinite 
+                        (update-state 
+                         (last 
+                          (take-while is-not-done
+                                      (iterate update-state state))))))
+
       ]
   
   (doall (print-state
-          (update sample-state :grid #(add-obstacle % [2 6]))))
+          (update sample-state :grid #(add-obstacle % [4 6]))))
 
-  (take-while is-not-done
-              (iterate update-state state))
+  (check-infinite sample-state)
+
   )
 
