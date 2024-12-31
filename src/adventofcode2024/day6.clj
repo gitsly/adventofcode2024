@@ -5,22 +5,30 @@
             [clojure.set :as set]))
 
 (let [input "resources/day6/sample"
-      lines (u/get-lines input)
+      grid (u/get-lines input)
 
       parse-line (fn[line]
+                   "Maybe not needed"
                    (loop [line line
                           coll []]
                      (if (empty? line)
                        coll
                        (recur (rest line)
                               (conj coll
-                                    (first line))
-                              ))))
+                                    (first line))))))
+
+      in-grid (fn [grid
+                   xy]
+                (let [[x y] xy]
+                  (get
+                   (get grid y) x)
+                  ))
+
 
       ]
-  (-> lines
-      first
-      parse-line)
+  ;;  (-> lines first parse-line)
+  (in-grid grid [4 6])
+
   )
 
 (re-seq #"a|c" "abcde")
