@@ -32,9 +32,15 @@
                          y (.indexOf grid start-line)]
                      [x y]))
 
+      turn (fn [state]
+             (let [dir (:dir state)]
+               dir))
+
+      state {:pos (find-start grid)
+             :dir [0 -1]}
       ]
   ;;(in-grid grid [4 6])
-  (find-start grid)
+  state
 
 
   )
