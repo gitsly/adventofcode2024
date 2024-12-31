@@ -24,11 +24,22 @@
                    (get grid y) x)
                   ))
 
+      find-start (fn [grid]
+                   "Returns [x,y] vector where ^ is located"
+                   (let [start-char \^
+                         start-line (first (filter #(not (nil? (str/index-of % start-char))) grid))
+                         x (str/index-of start-line start-char)
+                         y (.indexOf grid start-line)]
+                     [x y]))
 
       ]
-  ;;  (-> lines first parse-line)
-  (in-grid grid [4 6])
+  ;;(in-grid grid [4 6])
+  (find-start grid)
+
 
   )
 
-(re-seq #"a|c" "abcde")
+;;(def v ["one" "two" "three" "two"])
+;;(.indexOf v "two")
+
+(str/index-of "cba" \a)
