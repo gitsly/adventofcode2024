@@ -17,6 +17,7 @@
                   [-1 0] \< })
 
 (let [input "resources/day6/sample" ; pt1: 5409
+      input "resources/day6/printingpress"
       ;;     input "resources/day6/hasobstacle"
 
       grid (u/get-lines input)
@@ -25,10 +26,7 @@
                    xy]
                 (let [[x y] xy]
                   (get
-                   (get grid y) x)
-                  ))
-
-      ;; constants, like everything else... but...
+                   (get grid y) x)))
 
       find-start (fn [grid]
                    "Returns [x,y] vector where ^ is located"
@@ -46,10 +44,12 @@
                                (count dirs))]
                (get dirs next-index)))
 
-      state {:pos (find-start grid)
-             :grid grid
-             :dir (first dirs)
-             :visited []}
+      state (let [start-pos (find-start grid)
+                  start-dir (first dirs)]
+              {:pos start-pos
+               :grid grid
+               :dir start-dir
+               :visited [{:pos start-pos}]})
 
       print-state (fn [state]
                     "Visualize grid in ASCII art"
@@ -78,49 +78,67 @@
       inside-grid (fn [xy
                        size]
                     (let [[x y] xy]
-                      (and (>= x 0)
-                           (< x size)
-                           (>= y 0)
-                           (< y size))))
+                      (and (>= x 0) (< x size)
+                           (>= y 0) (< y size))))
 
       has-obstacle (fn [grid dir pos]
                      (let [check-pos (in-grid grid (vector-add pos dir))]
                        (= check-pos obstacle-char)))
       move (fn [state]
-             (-> state
-                 (update :visited #(conj % (:pos state)))
-                 (update :pos #(vector-add % (:dir state)))))
+             (let [{dir :dir
+                    grid :grid
+                    pos :pos} state
+                   next-pos (vector-add pos dir)]
+               (-> state
+                   (update :visited #(conj % {:pos next-pos
+                                              :dir dir }))
+                   (assoc :pos next-pos))))
 
-      pos-and-dir (fn [state]
-                    (let [{dir :dir
-                           grid :grid
-                           pos :pos} state]
-                      (if (has-obstacle grid dir pos)
-                        (-> state (update :dir turn))
-                        (-> state move))))
+      turn-or-move (fn [state]
+                     (let [{dir :dir
+                            grid :grid
+                            pos :pos} state]
+                       (if (has-obstacle grid dir pos)
+                         (-> state (update :dir turn))
+                         (-> state move))))
 
       inside (fn [state]
                (assoc state :inside
                       (inside-grid (:pos state) (count (:grid state)))))
+
+      infinite (fn [state]
+                 (let [{visited :visited} state]
+                   (-> state
+                       (assoc :infinite (not
+                                         (= (count visited)
+                                            (count (set visited))))))))
 
       update-state (fn [state]
                      (let [{dir :dir
                             grid :grid
                             pos :pos } state]
                        (-> state
-                           pos-and-dir
+                           turn-or-move
+                           infinite
                            inside)))
 
-      ;;      part1 (count (set (map :pos
-      ;;                             (take-while #(inside-grid (:pos %) (count grid))
-      ;;                                         (iterate update-state state))))) ;; [4 5]
+      is-not-done (fn [state]
+                    (and 
+                     (:inside state (count grid))
+                     (not (:infinite state))))
+
+      part1 (count (set (map :pos
+                             (:visited
+                              (last
+                               (take-while is-not-done
+                                           (iterate update-state state)))))))
+
       sample-state (last (take 14 (iterate update-state state)))
       ]
   
   (doall (print-state
           sample-state))
+  (:infinite sample-state)
 
-  (:visited sample-state)
-  ;; part1
+  part1
   )
-
