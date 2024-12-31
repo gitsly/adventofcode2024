@@ -6,10 +6,18 @@
 
 (def start-char \^)
 (def obstacle-char \#)
+(def dirs [[0 -1]
+           [1  0]
+           [0  1]
+           [-1 0]])
 
-(let [
-      input "resources/day6/sample"
-      input "resources/day6/hasobstacle"
+(def dir-to-char {[0 -1] \^
+                  [1  0] \>
+                  [0  1] \v
+                  [-1 0] \< })
+
+(let [input "resources/day6/input" ; pt1: 5409
+      ;;     input "resources/day6/hasobstacle"
 
       grid (u/get-lines input)
 
@@ -30,18 +38,7 @@
                          y (.indexOf grid start-line)]
                      [x y]))
 
-      dirs [[0 -1]
-            [1  0]
-            [0  1]
-            [-1 0]]
-
-      dir-to-char {[0 -1] \^
-                   [1  0] \>
-                   [0  1] \v
-                   [-1 0] \< }
-
-      turn (fn [dirs
-                dir]
+      turn (fn [dir]
              "Rotate 90 degrees right"
              (let [dir-index (.indexOf dirs dir)
                    next-index (mod
@@ -53,9 +50,6 @@
              :grid grid
              :dir (first dirs) }
 
-
-      test-dir-fn (map dir-to-char (take 12 (iterate #(turn dirs %)
-                                                     [0 -1]))) ; ^>v<^>v<^>v<
       print-state (fn [state]
                     "Visualize grid in ascii art"
                     (let [{dir :dir
@@ -68,9 +62,7 @@
                                          (get  dir-to-char dir)
                                          (if (= ch start-char)
                                            \.
-                                           ch)))
-                                     )
-                          ]
+                                           ch))))]
                       (for [y (range grid-size)]
                         (println
                          (apply str 
@@ -80,26 +72,33 @@
       vector-add (fn [a b]
                    (let [[a1 a2] a
                          [b1 b2] b]
-                     [(+ a1 b1)
-                      (+ a2 b2)]))
+                     [(+ a1 b1) (+ a2 b2)]))
 
-      has-obstacle (fn [state]
-                     (let [{dir :dir
-                            grid :grid
-                            pos :pos} state
-                           check-pos (in-grid grid (vector-add pos dir))]
+      inside-grid (fn [xy
+                       size]
+                    (let [[x y] xy]
+                      (and (>= x 0)
+                           (< x size)
+                           (>= y 0)
+                           (< y size))
+                      ))
+
+      has-obstacle (fn [grid dir pos]
+                     (let [check-pos (in-grid grid (vector-add pos dir))]
                        (= check-pos obstacle-char)))
 
-      do-move (fn [state]
-                (let [{dir :dir
-                       grid :grid
-                       pos :pos} state]
-                  ))
+      update-state (fn [state]
+                     (let [{dir :dir
+                            grid :grid
+                            pos :pos} state]
+                       (if (has-obstacle grid dir pos)
+                         (-> state (update :dir turn))
+                         (-> state (update :pos #(vector-add % dir)))
+                         )))
+      part1 (count (set
+                    (take-while #(inside-grid % (count grid))
+                                (map :pos (iterate update-state state))))) ;; [4 5]
 
       ]
-
-  (doall
-   (print-state state))
-
-  (has-obstacle state)
-  )
+  ;;(doall (print-state state))
+  part1)
