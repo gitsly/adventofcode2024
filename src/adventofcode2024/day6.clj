@@ -7,16 +7,6 @@
 (let [input "resources/day6/sample"
       grid (u/get-lines input)
 
-      parse-line (fn[line]
-                   "Maybe not needed"
-                   (loop [line line
-                          coll []]
-                     (if (empty? line)
-                       coll
-                       (recur (rest line)
-                              (conj coll
-                                    (first line))))))
-
       in-grid (fn [grid
                    xy]
                 (let [[x y] xy]
@@ -32,20 +22,38 @@
                          y (.indexOf grid start-line)]
                      [x y]))
 
-      turn (fn [state]
-             (let [dir (:dir state)]
-               dir))
+      dirs [[0 -1]
+            [1  0]
+            [0  1]
+            [-1 0]]
+
+      dir-to-char {[0 -1] \^
+                   [1  0] \>
+                   [0  1] \v
+                   [-1 0] \< }
+
 
       state {:pos (find-start grid)
-             :dir [0 -1]}
-      ]
-  ;;(in-grid grid [4 6])
-  state
+             :dir (first dirs) }
 
+      turn (fn [dirs
+                dir]
+             "rotate 90 degrees right"
+             (let [dir-index (.indexOf dirs dir)
+                   next-index (mod
+                               (inc dir-index)
+                               (count dirs))]
+               (get dirs next-index)))
+
+      do-move (fn [state]
+                (let [{dir :dir} state]
+                  ))
+
+      
+
+      test-dir-fn (map dir-to-char (take 12 (iterate #(turn dirs %)
+                                                     [0 -1]))) ; ^>v<^>v<^>v<
+
+      ]
 
   )
-
-;;(def v ["one" "two" "three" "two"])
-;;(.indexOf v "two")
-
-(str/index-of "cba" \a)
