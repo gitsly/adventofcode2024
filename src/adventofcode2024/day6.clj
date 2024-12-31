@@ -16,7 +16,7 @@
                   [0  1] \v
                   [-1 0] \< })
 
-(let [input "resources/day6/input" ; pt1: 5409
+(let [input "resources/day6/sample" ; pt1: 5409
       ;;     input "resources/day6/hasobstacle"
 
       grid (u/get-lines input)
@@ -80,25 +80,39 @@
                       (and (>= x 0)
                            (< x size)
                            (>= y 0)
-                           (< y size))
-                      ))
+                           (< y size))))
 
       has-obstacle (fn [grid dir pos]
                      (let [check-pos (in-grid grid (vector-add pos dir))]
                        (= check-pos obstacle-char)))
 
+      pos-and-dir (fn [state]
+                    (let [{dir :dir
+                           grid :grid
+                           pos :pos} state]
+                      (if (has-obstacle grid dir pos)
+                        (-> state (update :dir turn))
+                        (-> state (update :pos #(vector-add % dir))))))
+
+      inside (fn [state]
+               (assoc state :inside
+                      (inside-grid (:pos state) (count (:grid state)))))
+
       update-state (fn [state]
                      (let [{dir :dir
                             grid :grid
-                            pos :pos} state]
-                       (if (has-obstacle grid dir pos)
-                         (-> state (update :dir turn))
-                         (-> state (update :pos #(vector-add % dir)))
-                         )))
-      part1 (count (set
-                    (take-while #(inside-grid % (count grid))
-                                (map :pos (iterate update-state state))))) ;; [4 5]
+                            pos :pos } state]
+                       (-> state
+                           pos-and-dir
+                           inside)))
 
+      ;;      part1 (count (set (map :pos
+      ;;                             (take-while #(inside-grid (:pos %) (count grid))
+      ;;                                         (iterate update-state state))))) ;; [4 5]
+      updated-state (update-state state)
       ]
-  ;;(doall (print-state state))
-  part1)
+  
+  (doall (print-state
+          updated-state))
+  ;; part1
+  )
