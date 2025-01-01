@@ -2,23 +2,37 @@
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as s]
             [adventofcode2024.utils :as u]
+            [zprint.core :as zp]
             [clojure.set :as set]))
 
+(def text-formatting-width 80)
+
 (defn evaluate
-  [equation]
-  (let [{test-value :test-value
-         numbers :numbers
-         result :result }
-        equation]
-    (println equation)
-    (if (empty? numbers)
-      equation
-      (evaluate
-       (-> equation
-           (update :numbers rest)
-           (assoc :result (+ result (first numbers ))))
-       )))
-  )
+  [equs]
+  (let [doit (fn [equ] 
+               (let [{test-value :test-value
+                      numbers :numbers
+                      result :result } equ
+                     dopup (fn [equ op-fn]
+                             (-> equ
+                                 (update :numbers rest)
+                                 (update :ops
+                                         #(if (nil? %)
+                                            []
+                                            (conj % op-fn)))
+                                 (assoc :result (op-fn result (first numbers )))))
+                     ]
+                 (if (empty? numbers)
+                   equ
+                   (evaluate
+                    [(dopup equ +)
+                     (dopup equ *)]
+                    )
+                   )))]
+
+    (map doit equs)
+
+    ))
 
 (let [input "resources/day7/sample"
       lines (u/get-lines input)
@@ -35,10 +49,15 @@
                       :result 0 }
                      ))
 
-      equations (map parse-line lines)
+      equs (map parse-line lines)
+
+
+      test1 (flatten (evaluate [(first equs)]))
+
       ]
 
-  (evaluate
-   (first
-    equations))
+  ;;  (zp/zprint test1 text-formatting-width)
+  (filter #(= (:result %)
+              (:test-value %)) test1)
+
   )
