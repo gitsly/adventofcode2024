@@ -25,10 +25,30 @@
                           (parse-lines lines))))
       ;;...O.....0...............................p..k.....
 
-      antennas (filter #(not (= \. (:char %))) (flatten (parse-lines lines)))
+      get-char (fn [state xy]
+                 (if-let [antenna (first (get (group-by :pos
+                                                        (:antennas state))
+                                              xy))]
+                   (:char antenna)
+                   \.)
+                 )
+
+      print-state (fn [state]
+                    "Visualize in ASCII art"
+                    (let [grid-size (count lines)]
+                      (for [y (range grid-size)]
+                        (println
+                         (apply str 
+                                (for [x (range grid-size)]
+                                  (get-char state [x y])))))))
+
+      antennas (filter #(not (= \. (:char %)))
+                       (flatten (parse-lines lines)))
+      state {:antennas antennas}
       ]
 
-  (keys
-   (group-by :char antennas))
+  (print-state state)
+
+  
 
   )
