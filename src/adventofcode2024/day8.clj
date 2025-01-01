@@ -5,6 +5,8 @@
             [zprint.core :as zp]
             [clojure.set :as set]))
 
+(defn )
+
 (let [
       input "resources/day8/sample" ;(12x12)
       ;; input "resources/day8/input"
@@ -26,8 +28,9 @@
       ;;...O.....0...............................p..k.....
 
       get-char (fn [state xy]
-                 (if-let [antenna (first (get (group-by :pos
-                                                        (:antennas state))
+                 (if-let [antenna (first (get (group-by
+                                               :pos
+                                               (:antennas state))
                                               xy))]
                    (:char antenna)
                    \.)
@@ -42,13 +45,28 @@
                                 (for [x (range grid-size)]
                                   (get-char state [x y])))))))
 
+      add-antinode (fn [state xy]
+                     (let [[x y] xy
+                           size (:size state)
+                           antinode {:char \#
+                                     :pos xy}]
+                       (if (and (>= x 0) (< x size)
+                                (>= y 0) (< y size))
+                         (update state :antennas
+                                 #(conj % antinode))
+                         state))
+                     )
+
       antennas (filter #(not (= \. (:char %)))
                        (flatten (parse-lines lines)))
-      state {:antennas antennas}
+      state {:antennas antennas
+             :size (count lines)}
       ]
 
-  (print-state state)
-
-  
+  (print-state
+   (-> state
+       (add-antinode  [-5 1])
+       (add-antinode  [6 2])
+       ))
 
   )
