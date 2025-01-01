@@ -7,8 +7,14 @@
 
 (def text-formatting-width 80)
 
+(defn concatenation
+  [a b]
+  (Long/parseLong
+   (str a b)))
+
 (defn evaluate
-  [equs]
+  [equs
+   ops]
   (let [doit (fn [equ] 
                (let [{test-value :test-value
                       numbers :numbers
@@ -24,16 +30,16 @@
                      ]
                  (if (empty? numbers)
                    equ
-                   (evaluate
-                    [(dopup equ +)
-                     (dopup equ *)]
-                    )
-                   )))]
+                   (evaluate ; recurse
+                    (map #(dopup equ %) ops)
+                    ops)
+                   )))
+        ]
     (map doit equs)))
 
 (let [
       input "resources/day7/sample" ;pt1 3749
-      ;;      input "resources/day7/input" ; pt1: 6392012777720
+      input "resources/day7/input" ; pt1: 6392012777720
       lines (u/get-lines input)
 
       parse-line (fn [line]
@@ -50,11 +56,9 @@
 
       equs (map parse-line lines)
 
-
-      test1 (flatten (evaluate [(first equs)]))
-
-      check-equ (fn [equ]
-                  (->> (evaluate [equ])
+      check-equ (fn [equ ops]
+                  "Returns first equ with ops where result matches test-value"
+                  (->> (evaluate [equ] ops)
                        flatten 
                        (filter #(= (:result %)
                                    (:test-value %)))
@@ -63,13 +67,15 @@
       not-nil? (fn [item]
                  (not (nil? item)))
 
-      part1 (->> equs
-                 (map check-equ)
-                 (filter not-nil?)
-                 (map :result)
-                 (reduce +))
-      ]
-  ;;  (zp/zprint test1 text-formatting-width)
-  
+      total-calibration-result (fn [equs ops]
+                                 (->> equs
+                                      (map #(check-equ % ops))
+                                      (filter not-nil?)
+                                      (map :result)
+                                      (reduce +))                     )
 
-  )
+      part1  (total-calibration-result equs [+ *])
+      part2  (total-calibration-result equs [+ * concatenation])]
+  (println
+   {:part1 part1
+    :part2 part2 }))
