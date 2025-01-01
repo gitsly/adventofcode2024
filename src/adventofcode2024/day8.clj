@@ -9,7 +9,7 @@
 
 (let [
       input "resources/day8/sample" ;(12x12)
-      ;; input "resources/day8/input"
+      input "resources/day8/input"
       ;;      input "resources/day7/input" ; pt1: 6392012777720
       lines (u/get-lines input)
 
@@ -105,8 +105,11 @@
                                      (undirectional-pairs frequency)))
       ]
 
-  (print-state
-   (let [freqs (group-by :char antennas)]
-     (add-antinodes-for-frequency state (get freqs \A) )))
+  ;;  (print-state)
 
+  (count-unique-antinodes
+   (let [freqs (group-by :char antennas)]
+     (u/iterate-coll-on state
+                        add-antinodes-for-frequency
+                        (vals  freqs))))
   )
