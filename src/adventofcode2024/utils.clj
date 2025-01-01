@@ -39,6 +39,20 @@
   [coll element]  
   (some #(= element %) coll))
 
+
+(defn iterate-coll-on
+  "applies fn with arguments state items from coll over and over"
+  [state
+   it-fn
+   coll]
+  (loop [coll coll
+         state state]
+    (if (empty? coll)
+      state
+      (recur (rest coll)
+             (it-fn state (first coll)) ))))
+
+
 (defn drop-nth [n coll]
   (concat 
    (take n coll)

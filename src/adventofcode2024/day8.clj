@@ -91,33 +91,22 @@
       simple (fn [antenna]
                (:pos antenna))
 
-
-      add-antinodes-for-frequency (fn [state
-                                       antennas]
-                                    (let [pairs (undirectional-pairs antennas)]
-                                      (loop [pairs pairs
-                                             state state]
-                                        (if (empty? pairs)
-                                          state
-                                          (recur (rest pairs)
-                                                 (let [[a b] (first pairs)]
-                                                   (calculate-antinodes state a b)))))
-                                      )
-                                    )
-
       test2 (-> state
                 (add-antinode  [-5 1])
                 (add-antinode  [6 2]))
+
+      add-antinodes-for-frequency (fn [state frequency]
+                                    (u/iterate-coll-on
+                                     state
+                                     (fn [state
+                                          item]
+                                       (let [[a b] item]
+                                         (calculate-antinodes state a b)))
+                                     (undirectional-pairs frequency)))
       ]
 
-  ;;  (count-unique-antinodes
-  ;;   (calculate-antinodes state
-  ;;                        (first sample-of-0)
-  ;;                        (second sample-of-0)))
   (print-state
-   (add-antinodes-for-frequency state
-                                (get (group-by :char antennas) \0)))
+   (let [freqs (group-by :char antennas)]
+     (add-antinodes-for-frequency state (get freqs \A) )))
 
-
-  ;;  (get (group-by :char antennas) \0)
   )
