@@ -62,29 +62,34 @@
              :size (count lines)}
 
       calculate-antinodes (fn [state
-                               a
-                               b]
+                               a b]
+                            "calculate positions and add antinodes for two given antennas"
                             (let [pa (:pos a)
                                   pb (:pos b)
                                   diff (u/vector-sub pa pb)
                                   a1 (u/vector-add pa diff)
                                   a2 (u/vector-add pb (u/vector-mul [-1 -1] diff))]
-
                               (-> state
                                   (add-antinode a1)
                                   (add-antinode a2)
-                                  )
-
-                              ))
+                                  )))
 
       sample-of-0 (take 2 (drop 1 (val (first (group-by :char antennas)))))
+
+      count-unique-antinodes (fn [state]
+                               (count
+                                (group-by :pos
+                                          (filter #(= \# (:char %))
+                                                  (:antennas state)))))
 
       test2 (-> state
                 (add-antinode  [-5 1])
                 (add-antinode  [6 2]))
       ]
 
-  (print-state
+  ;;  (print-state)
+
+  (count-unique-antinodes
    (calculate-antinodes state
                         (first sample-of-0)
                         (second sample-of-0)))
