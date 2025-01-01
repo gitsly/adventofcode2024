@@ -29,12 +29,11 @@
                      (dopup equ *)]
                     )
                    )))]
+    (map doit equs)))
 
-    (map doit equs)
-
-    ))
-
-(let [input "resources/day7/sample"
+(let [
+      input "resources/day7/sample" ;pt1 3749
+      ;;      input "resources/day7/input" ; pt1: 6392012777720
       lines (u/get-lines input)
 
       parse-line (fn [line]
@@ -44,7 +43,7 @@
                                            (map str/trim)
                                            (map Integer/parseInt)))
                          ]
-                     {:test-value (Integer/parseInt test-value)
+                     {:test-value (Long/parseLong test-value)
                       :numbers numbers
                       :result 0 }
                      ))
@@ -54,10 +53,23 @@
 
       test1 (flatten (evaluate [(first equs)]))
 
-      ]
+      check-equ (fn [equ]
+                  (->> (evaluate [equ])
+                       flatten 
+                       (filter #(= (:result %)
+                                   (:test-value %)))
+                       first))
 
+      not-nil? (fn [item]
+                 (not (nil? item)))
+
+      part1 (->> equs
+                 (map check-equ)
+                 (filter not-nil?)
+                 (map :result)
+                 (reduce +))
+      ]
   ;;  (zp/zprint test1 text-formatting-width)
-  (filter #(= (:result %)
-              (:test-value %)) test1)
+  
 
   )
