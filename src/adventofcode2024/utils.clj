@@ -19,6 +19,21 @@
   [f coll]
   (first (filter f coll)))
 
+
+(defn vector-op [a b op-fn]
+  (let [[a1 a2] a
+        [b1 b2] b]
+    [(op-fn a1 b1) (op-fn a2 b2)]))
+
+(defn vector-add [a b]
+  (vector-op a b +))
+
+(defn vector-sub [a b]
+  (vector-op a b -))
+
+(defn vector-mul [a b]
+  (vector-op a b *))
+
 (defn in? 
   "true if coll contains elm"
   [coll element]  

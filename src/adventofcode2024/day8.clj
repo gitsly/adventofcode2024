@@ -25,7 +25,6 @@
                     (map :char
                          (first
                           (parse-lines lines))))
-      ;;...O.....0...............................p..k.....
 
       get-char (fn [state xy]
                  (if-let [antenna (first (get (group-by
@@ -33,8 +32,7 @@
                                                (:antennas state))
                                               xy))]
                    (:char antenna)
-                   \.)
-                 )
+                   \.))
 
       print-state (fn [state]
                     "Visualize in ASCII art"
@@ -59,14 +57,37 @@
 
       antennas (filter #(not (= \. (:char %)))
                        (flatten (parse-lines lines)))
+
       state {:antennas antennas
              :size (count lines)}
+
+      calculate-antinodes (fn [state
+                               a
+                               b]
+                            (let [pa (:pos a)
+                                  pb (:pos b)
+                                  diff (u/vector-sub pa pb)
+                                  a1 (u/vector-add pa diff)
+                                  a2 (u/vector-add pb (u/vector-mul [-1 -1] diff))]
+
+                              (-> state
+                                  (add-antinode a1)
+                                  (add-antinode a2)
+                                  )
+
+                              ))
+
+      sample-of-0 (take 2 (drop 1 (val (first (group-by :char antennas)))))
+
+      test2 (-> state
+                (add-antinode  [-5 1])
+                (add-antinode  [6 2]))
       ]
 
   (print-state
-   (-> state
-       (add-antinode  [-5 1])
-       (add-antinode  [6 2])
-       ))
+   (calculate-antinodes state
+                        (first sample-of-0)
+                        (second sample-of-0)))
+
 
   )
