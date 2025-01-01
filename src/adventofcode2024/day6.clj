@@ -16,7 +16,8 @@
                   [0  1] \v
                   [-1 0] \< })
 
-(let [input "resources/day6/sample" ; pt1: 5409
+(let [input "resources/day6/input" ; pt1: 5409, pt2: 2022 (terribly slow though, no optimizations done, took about a day to compute)
+      input "resources/day6/sample" ; pt1: 41
       ;;input "resources/day6/printingpress" ; 18 unique steps
       ;;     input "resources/day6/hasobstacle"
 
@@ -47,8 +48,9 @@
                                (count dirs))]
                (get dirs next-index)))
 
-      state (let [start-pos (find-start grid)
-                  start-dir (first dirs)]
+      start-pos (find-start grid)
+
+      state (let [start-dir (first dirs)]
               {:pos start-pos
                :grid grid
                :dir start-dir
@@ -158,19 +160,22 @@
                           (take-while is-not-done
                                       (iterate update-state state))))))
 
-      all-permutations (for [x (range (count grid))]
-                         (update state :grid #(add-obstacle % [x 6])))
+      ;; except starting position
+      all-permutations (for [y (range (count grid))
+                             x (range (count grid))]
+                         (if (= [x y] start-pos)
+                           state
+                           (update state :grid #(add-obstacle % [x y]))))
+
+      row6-of-all-permutations (map #(nth % 6)
+                                    (map :grid
+                                         all-permutations))
+
+      part2 (count (filter true? (pmap check-infinite all-permutations))) ; This one is very slow! (with real input)
       ]
-  
-  (doall (print-state
-          (update sample-state :grid #(add-obstacle % [4 6]))))
 
-  ;;  (check-infinite
-  ;;   (update state :grid #(add-obstacle % [3 6])))
-
-  (map #(nth % 6)
-       (map :grid
-            all-permutations))
-
-  )
+  {:part1 part1
+   :part2 part2
+   :size (count grid) ; 10 in sample, 130 in real input => 16900
+   })
 
