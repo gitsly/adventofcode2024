@@ -39,7 +39,7 @@
 
 (let [
       input "resources/day7/sample" ;pt1 3749
-      input "resources/day7/input" ; pt1: 6392012777720
+      ;;      input "resources/day7/input" ; pt1: 6392012777720
       lines (u/get-lines input)
 
       parse-line (fn [line]
