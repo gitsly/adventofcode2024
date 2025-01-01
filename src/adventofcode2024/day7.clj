@@ -4,6 +4,22 @@
             [adventofcode2024.utils :as u]
             [clojure.set :as set]))
 
+(defn evaluate
+  [equation]
+  (let [{test-value :test-value
+         numbers :numbers
+         result :result }
+        equation]
+    (println equation)
+    (if (empty? numbers)
+      equation
+      (evaluate
+       (-> equation
+           (update :numbers rest)
+           (assoc :result (+ result (first numbers ))))
+       )))
+  )
+
 (let [input "resources/day7/sample"
       lines (u/get-lines input)
 
@@ -15,11 +31,14 @@
                                            (map Integer/parseInt)))
                          ]
                      {:test-value (Integer/parseInt test-value)
-                      :numbers numbers}
+                      :numbers numbers
+                      :result 0 }
                      ))
 
       equations (map parse-line lines)
       ]
 
-  equations
+  (evaluate
+   (first
+    equations))
   )
