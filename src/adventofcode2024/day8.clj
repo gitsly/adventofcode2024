@@ -34,6 +34,14 @@
                    (:char antenna)
                    \.))
 
+
+      undirectional-pairs (fn [coll ]
+                            (filter #(not (nil? %))
+                                    (for [i (range (count coll))
+                                          j (range (count coll))]
+                                      (if (> j i)
+                                        [(get coll i) (get coll j)]))))
+
       print-state (fn [state]
                     "Visualize in ASCII art"
                     (let [grid-size (count lines)]
@@ -71,8 +79,7 @@
                                   a2 (u/vector-add pb (u/vector-mul [-1 -1] diff))]
                               (-> state
                                   (add-antinode a1)
-                                  (add-antinode a2)
-                                  )))
+                                  (add-antinode a2))))
 
       sample-of-0 (take 2 (drop 1 (val (first (group-by :char antennas)))))
 
@@ -81,18 +88,36 @@
                                 (group-by :pos
                                           (filter #(= \# (:char %))
                                                   (:antennas state)))))
+      simple (fn [antenna]
+               (:pos antenna))
+
+
+      add-antinodes-for-frequency (fn [state
+                                       antennas]
+                                    (let [pairs (undirectional-pairs antennas)]
+                                      (loop [pairs pairs
+                                             state state]
+                                        (if (empty? pairs)
+                                          state
+                                          (recur (rest pairs)
+                                                 (let [[a b] (first pairs)]
+                                                   (calculate-antinodes state a b)))))
+                                      )
+                                    )
 
       test2 (-> state
                 (add-antinode  [-5 1])
                 (add-antinode  [6 2]))
       ]
 
-  ;;  (print-state)
+  ;;  (count-unique-antinodes
+  ;;   (calculate-antinodes state
+  ;;                        (first sample-of-0)
+  ;;                        (second sample-of-0)))
+  (print-state
+   (add-antinodes-for-frequency state
+                                (get (group-by :char antennas) \0)))
 
-  (count-unique-antinodes
-   (calculate-antinodes state
-                        (first sample-of-0)
-                        (second sample-of-0)))
 
-
+  ;;  (get (group-by :char antennas) \0)
   )
