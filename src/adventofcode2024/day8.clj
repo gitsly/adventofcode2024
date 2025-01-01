@@ -6,8 +6,8 @@
             [clojure.set :as set]))
 
 (let [
-      input "resources/day8/sample" ;pt1 3749
-      input "resources/day8/input" ;pt1 3749
+      input "resources/day8/sample" ;(12x12)
+      ;; input "resources/day8/input"
       ;;      input "resources/day7/input" ; pt1: 6392012777720
       lines (u/get-lines input)
 
@@ -19,11 +19,16 @@
                     (for [y (range (count lines))]
                       (parse-line (get lines y) y)))
 
+      test1  (apply str
+                    (map :char
+                         (first
+                          (parse-lines lines))))
+      ;;...O.....0...............................p..k.....
+
+      antennas (filter #(not (= \. (:char %))) (flatten (parse-lines lines)))
       ]
 
-  (apply str
-         (map :char
-              (first
-               (parse-lines lines))))
+  (keys
+   (group-by :char antennas))
 
   )
