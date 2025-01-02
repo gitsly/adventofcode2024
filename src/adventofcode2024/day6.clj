@@ -75,10 +75,6 @@
                                 (for [x (range grid-size)]
                                   (get-char [x y])))))))
 
-      vector-add (fn [a b]
-                   (let [[a1 a2] a
-                         [b1 b2] b]
-                     [(+ a1 b1) (+ a2 b2)]))
 
       inside-grid (fn [xy
                        size]
@@ -87,7 +83,7 @@
                            (>= y 0) (< y size))))
 
       has-obstacle (fn [grid dir pos]
-                     (let [check-pos (in-grid grid (vector-add pos dir))]
+                     (let [check-pos (in-grid grid (u/vector-add pos dir))]
                        (= check-pos obstacle-char)))
 
       move (fn [state]
