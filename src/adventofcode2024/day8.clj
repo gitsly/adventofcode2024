@@ -9,7 +9,7 @@
 
 (let [
       input "resources/day8/sample" ;(12x12)
-      input "resources/day8/input"
+      ;;      input "resources/day8/input"
       ;;      input "resources/day7/input" ; pt1: 6392012777720
       lines (u/get-lines input)
 
@@ -35,12 +35,13 @@
                    \.))
 
 
-      undirectional-pairs (fn [coll ]
+      undirectional-pairs (fn [coll]
                             (filter #(not (nil? %))
-                                    (for [i (range (count coll))
-                                          j (range (count coll))]
-                                      (if (> j i)
-                                        [(get coll i) (get coll j)]))))
+                                    (let [coll (vec coll)]
+                                      (for [i (range (count coll))
+                                            j (range (count coll))]
+                                        (if (> j i)
+                                          [(get coll i) (get coll j)])))))
 
       print-state (fn [state]
                     "Visualize in ASCII art"
@@ -81,7 +82,7 @@
                                   (add-antinode a1)
                                   (add-antinode a2))))
 
-      sample-of-0 (take 2 (drop 1 (val (first (group-by :char antennas)))))
+      sample-of-0 (take 2 (val (first (group-by :char antennas))))
 
       count-unique-antinodes (fn [state]
                                (count
@@ -105,11 +106,16 @@
                                      (undirectional-pairs frequency)))
       ]
 
-  ;;  (print-state)
 
+  (print-state
+   (add-antinodes-for-frequency state sample-of-0))
+
+
+  )
+
+(comment
   (count-unique-antinodes
    (let [freqs (group-by :char antennas)]
      (u/iterate-coll-on state
                         add-antinodes-for-frequency
-                        (vals  freqs))))
-  )
+                        (vals freqs)))))
