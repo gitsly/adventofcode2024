@@ -9,7 +9,7 @@
 
 (let [
       input "resources/day8/sample" ;(12x12)
-      ;;      input "resources/day8/input"
+      input "resources/day8/input"
       ;;      input "resources/day7/input" ; pt1: 6392012777720
       lines (u/get-lines input)
 
@@ -75,12 +75,19 @@
                             "calculate positions and add antinodes for two given antennas"
                             (let [pa (:pos a)
                                   pb (:pos b)
-                                  diff (u/vector-sub pa pb)
-                                  a1 (u/vector-add pa diff)
-                                  a2 (u/vector-add pb (u/vector-mul [-1 -1] diff))]
+                                  len (* 2 (:size state))
+                                  diff (u/vector-sub pa pb)]
                               (-> state
-                                  (add-antinode a1)
-                                  (add-antinode a2))))
+                                  (u/iterate-coll-on add-antinode
+                                                     (for [i (range len)]
+                                                       (u/vector-add pb (u/vector-mul [i i] diff))))
+
+                                  (u/iterate-coll-on add-antinode
+                                                     (for [i (range 1 len)]
+                                                       (u/vector-add pb (u/vector-mul
+                                                                         [(* -1 i) (* -1 i)]
+                                                                         diff)))))
+                              ))
 
       sample-of-0 (take 2 (val (first (group-by :char antennas))))
 
@@ -107,15 +114,14 @@
       ]
 
 
-  (print-state
-   (add-antinodes-for-frequency state sample-of-0))
-
-
-  )
-
-(comment
+  ;;  (print-state
+  ;;   (add-antinodes-for-frequency state sample-of-0))
   (count-unique-antinodes
    (let [freqs (group-by :char antennas)]
      (u/iterate-coll-on state
                         add-antinodes-for-frequency
-                        (vals freqs)))))
+                        (vals freqs))))
+
+  )
+
+
